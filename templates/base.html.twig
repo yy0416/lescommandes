@@ -1,17 +1,127 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="{{ app.request.locale }}">
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}
+				{{ 'site.title'|trans }}
+			{% endblock %}
+		</title>
+		<link
+		rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+		{# 添加 Google Fonts #}
+		<link
+		href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+		{# Bootstrap CSS #}
+		<link
+		href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+		{# 自定义样式 #}
+		<link href="{{ asset('css/style.css') }}" rel="stylesheet">
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+		{% block stylesheets %}
+			<style>
+				body {
+					min-height: 100vh;
+					display: flex;
+					flex-direction: column;
+				}
+
+				main {
+					flex: 1 0 auto;
+				}
+
+				footer {
+					flex-shrink: 0;
+					background-color: #f8f9fa;
+					padding: 1.5rem 0;
+					margin-top: 2rem;
+				}
+			</style>
+		{% endblock %}
+
+		{% block importmap %}
+			{{ importmap('app') }}
+		{% endblock %}
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-light">
+			<div class="container">
+				<a class="navbar-brand" href="{{ path('app_shop') }}">{{ 'site.name'|trans }}</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('app_shop') }}">{{ 'nav.products'|trans }}</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('app_cart') }}">{{ 'nav.cart'|trans }}</a>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
+								{% if app.request.locale == 'zh' %}
+									中文
+								{% elseif app.request.locale == 'en' %}
+									English
+								{% else %}
+									Français
+								{% endif %}
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item" href="{{ path('change_locale', {'locale': 'zh'}) }}">中文</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="{{ path('change_locale', {'locale': 'en'}) }}">English</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="{{ path('change_locale', {'locale': 'fr'}) }}">Français</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<main class="py-4">
+			{% for label, messages in app.flashes %}
+				{% for message in messages %}
+					<div class="container">
+						<div class="alert alert-{{ label }} alert-dismissible fade show">
+							{{ message }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+						</div>
+					</div>
+				{% endfor %}
+			{% endfor %}
+
+			{% for message in app.flashes('error') %}
+				<div class="alert alert-danger">{{ message }}</div>
+			{% endfor %}
+
+			{% block body %}{% endblock %}
+		</main>
+
+		<footer class="bg-white py-4 mt-5">
+			<div class="container text-center">
+				<p class="mb-0">&copy;
+					{{ "now"|date("Y") }}
+					商品订购系统. All rights reserved.</p>
+			</div>
+		</footer>
+
+		{# Bootstrap JS #}
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			document.addEventListener('DOMContentLoaded', function () { // 重新初始化所有下拉菜单
+var dropdowns = document.querySelectorAll('.dropdown-toggle');
+dropdowns.forEach(function (dropdown) {
+new bootstrap.Dropdown(dropdown);
+});
+});
+		</script>
+		{% block javascripts %}{% endblock %}
+	</body>
 </html>

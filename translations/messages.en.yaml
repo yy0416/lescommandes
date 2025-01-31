@@ -1,0 +1,20 @@
+site:
+  title: "Product Ordering System"
+  name: "Product Ordering System"
+  rights: "All rights reserved"
+nav:
+  products: "Products"
+  cart: "Cart"
+product:
+  add_to_cart: "Add to Cart"
+  quantity: "Quantity"
+  price: "Price"
+cart:
+  empty: "Cart is empty"
+  continue_shopping: "Continue Shopping"
+  checkout: "Checkout"
+  total: "Total"
+checkout:
+  title: "Checkout"
+  back_to_cart: "Back to Cart"
+  place_order: "Place Order"

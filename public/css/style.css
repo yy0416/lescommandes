@@ -1,0 +1,189 @@
+:root {
+    /* 现代简约配色 */
+    --primary: #2563eb;      /* 明亮的蓝色 */
+    --primary-dark: #1d4ed8; /* 深蓝色 */
+    --secondary: #f1f5f9;    /* 浅灰蓝 */
+    --accent: #3b82f6;       /* 亮蓝色 */
+    --background: #ffffff;   /* 纯白色 */
+    --surface: #f8fafc;      /* 浅灰白 */
+    --text-primary: #0f172a; /* 深色文本 */
+    --text-secondary: #475569;/* 次要文本 */
+    --success: #10b981;      /* 绿色 */
+    --warning: #f59e0b;      /* 橙色 */
+    --error: #ef4444;        /* 红色 */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    background-color: var(--surface);
+    color: var(--text-primary);
+    font-family: 'Noto Sans SC', sans-serif;
+    line-height: 1.6;
+}
+
+/* 导航栏样式 */
+.navbar {
+    background-color: var(--background);
+    box-shadow: var(--shadow);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    color: var(--primary) !important;
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.nav-link {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary) !important;
+}
+
+/* 商品卡片样式 */
+.product-card {
+    background-color: var(--background);
+    border: none;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.product-image {
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.product-card h3 {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin: 1rem 0;
+}
+
+.price {
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* 按钮样式 */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    padding: 0.8rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* 表单控件样式 */
+.form-control {
+    border: 2px solid var(--secondary);
+    border-radius: 0.5rem;
+    padding: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* 页面标题样式 */
+h1.page-title {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+/* 购物车表格样式 */
+.table {
+    background-color: var(--background);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.table th {
+    background-color: var(--secondary);
+    color: var(--text-primary);
+    font-weight: 600;
+    padding: 1rem;
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* 页脚样式 */
+footer {
+    background-color: white;
+    border-top: 1px solid var(--secondary);
+    padding: 2rem 0;
+    margin-top: 4rem;
+}
+
+footer p {
+    color: var(--text-secondary);
+}
+
+/* 语言切换下拉菜单 */
+.dropdown-menu {
+    background-color: var(--background);
+    border: none;
+    box-shadow: var(--shadow-lg);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.dropdown-item {
+    padding: 0.8rem 1.5rem;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--secondary);
+    color: var(--primary);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .product-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    h1.page-title {
+        font-size: 2rem;
+    }
+} 

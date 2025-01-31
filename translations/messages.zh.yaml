@@ -1,0 +1,28 @@
+site:
+  title: "商品订购系统"
+  name: "商品订购系统"
+  rights: "版权所有"
+nav:
+  products: "商品列表"
+  cart: "购物车"
+product:
+  add_to_cart: "加入购物车"
+  quantity: "数量"
+  price: "价格"
+cart:
+  empty: "购物车是空的"
+  continue_shopping: "继续购物"
+  checkout: "去结算"
+  total: "总计"
+checkout:
+  title: "确认订单"
+  order_info: "订单信息"
+  summary: "订单明细"
+  total: "总计"
+  customer_name: "姓名"
+  phone: "联系电话"
+  email: "电子邮箱"
+  pickup_location: "取货地点"
+  pickup_time: "取货时间"
+  back_to_cart: "返回购物车"
+  place_order: "提交订单"

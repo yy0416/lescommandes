@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}我的订单
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h1 class="mb-4">我的订单</h1>
+
+		{% if orders|length > 0 %}
+			<div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>订单号</th>
+							<th>下单时间</th>
+							<th>订单金额</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for order in orders %}
+							<tr>
+								<td>{{ order.id }}</td>
+								<td>{{ order.createdAt|date('Y-m-d H:i:s') }}</td>
+								<td>¥{{ order.totalAmount }}</td>
+								<td>
+									<a href="{{ path('app_order_detail', {'id': order.id}) }}" class="btn btn-primary btn-sm">查看详情</a>
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% else %}
+			<p>暂无订单。
+				<a href="{{ path('app_shop') }}">去购物</a>
+			</p>
+		{% endif %}
+	</div>
+{% endblock %}

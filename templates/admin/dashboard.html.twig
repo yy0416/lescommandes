@@ -1,0 +1,60 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content %}
+	<div class="jumbotron">
+		<h1>欢迎来到管理后台</h1>
+		<p>使用左侧菜单进行操作</p>
+		<button id="enableNotifications" class="btn btn-primary">启用新订单通知</button>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		async function initPushNotifications() {
+if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+console.log('Push notifications not supported');
+return;
+}
+
+try {
+const registration = await navigator.serviceWorker.register('/sw.js');
+console.log('ServiceWorker registered');
+
+const button = document.getElementById('enableNotifications');
+button.addEventListener('click', async () => {
+const permission = await Notification.requestPermission();
+if (permission === 'granted') {
+await subscribeToPush(registration);
+}
+});
+} catch (error) {
+console.error('ServiceWorker registration failed:', error);
+}
+}
+
+async function subscribeToPush(registration) {
+try {
+const response = await fetch('/admin/push/key');
+const data = await response.json();
+
+const subscription = await registration.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: data.publicKey});
+
+await fetch('/admin/push/subscribe', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(subscription)
+});
+
+alert('成功启用新订单通知！');
+} catch (error) {
+console.error('Failed to subscribe:', error);
+alert('启用通知失败，请重试');
+}
+}
+
+initPushNotifications();
+	</script>
+{% endblock %}

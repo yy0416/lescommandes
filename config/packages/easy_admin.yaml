@@ -1,0 +1,37 @@
+easy_admin:
+  entities:
+    Product:
+      class: App\Entity\Product
+      list:
+        fields:
+          - id
+          - name
+          - price
+          - image
+      form:
+        fields:
+          - name
+          - { property: "price", type: "number" }
+          - { property: "image", type: "file" }
+          - description
+
+    Order:
+      class: App\Entity\Order
+      list:
+        fields:
+          - id
+          - customerName
+          - email
+          - phone
+          - pickupTime
+          - totalAmount
+          - createdAt
+
+    PickupLocation:
+      class: App\Entity\PickupLocation
+      list:
+        fields:
+          - id
+          - name
+          - address
+          - isActive

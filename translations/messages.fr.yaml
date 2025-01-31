@@ -1,0 +1,20 @@
+site:
+  title: "Système de Commande de Produits"
+  name: "Système de Commande de Produits"
+  rights: "Tous droits réservés"
+nav:
+  products: "Produits"
+  cart: "Panier"
+product:
+  add_to_cart: "Ajouter au Panier"
+  quantity: "Quantité"
+  price: "Prix"
+cart:
+  empty: "Le panier est vide"
+  continue_shopping: "Continuer les Achats"
+  checkout: "Commander"
+  total: "Total"
+checkout:
+  title: "Paiement"
+  back_to_cart: "Retour au panier"
+  place_order: "Passer la commande"

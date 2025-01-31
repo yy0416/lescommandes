@@ -1,3 +1,22 @@
+:root {
+    --primary-color: #FFD700;  /* 金黄色 */
+    --secondary-color: #FFF4B8;  /* 浅黄色 */
+    --accent-color: #FFB800;  /* 深黄色 */
+}
+
 body {
-    background-color: skyblue;
+    background-color: var(--secondary-color);
+}
+
+.navbar {
+    background-color: var(--primary-color);
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.card {
+    border-color: var(--primary-color);
 }
