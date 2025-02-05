@@ -26,3 +26,9 @@ checkout:
   pickup_time: "取货时间"
   back_to_cart: "返回购物车"
   place_order: "提交订单"
+menu:
+  dashboard: "管理后台"
+  products: "产品管理"
+  orders: "订单管理"
+  pickup_locations: "自提点管理"
+  pickup_timeslots: "取货时间管理"

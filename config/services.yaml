@@ -35,8 +35,8 @@ services:
 
   App\Service\OrderMailer:
     arguments:
-      $adminEmail: "%admin_email%"
-      $systemEmail: "%system_email%"
+      $adminEmail: "%env(ADMIN_EMAIL)%"
+      $systemEmail: "%env(SYSTEM_EMAIL)%"
 
   App\Service\PushNotificationService:
     arguments:

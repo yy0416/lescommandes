@@ -18,3 +18,9 @@ checkout:
   title: "Checkout"
   back_to_cart: "Back to Cart"
   place_order: "Place Order"
+menu:
+  dashboard: "Dashboard"
+  products: "Products"
+  orders: "Orders"
+  pickup_locations: "Pickup Locations"
+  pickup_timeslots: "Pickup Time Slots"

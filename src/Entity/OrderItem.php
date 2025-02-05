@@ -75,4 +75,9 @@ class OrderItem
         $this->price = $price;
         return $this;
     }
+
+    public function getSubtotal(): float
+    {
+        return $this->price * $this->quantity;
+    }
 }

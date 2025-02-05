@@ -15,9 +15,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Psr\Log\LoggerInterface;
 
 class ShopController extends AbstractController
 {
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     #[Route('/', name: 'app_shop')]
     public function index(EntityManagerInterface $entityManager): Response
     {
@@ -181,23 +189,48 @@ class ShopController extends AbstractController
                 $entityManager->persist($order);
                 $entityManager->flush();
 
+                // 尝试发送邮件
+                try {
+                    $this->logger->info('Preparing to send order confirmation email', [
+                        'order_id' => $order->getId(),
+                        'customer_email' => $order->getEmail(),
+                        'items_count' => $order->getOrderItems()->count(),
+                        'pickup_time' => $order->getPickupTime()?->format('Y-m-d H:i'),
+                        'pickup_location' => $order->getPickupLocation()?->getName(),
+                        'total_amount' => $order->getTotalAmount(),
+                        'mailer_dsn' => $_ENV['MAILER_DSN'] ?? 'not set',
+                        'system_email' => $_ENV['SYSTEM_EMAIL'] ?? 'not set'
+                    ]);
+
+                    $orderMailer->sendOrderConfirmation($order);
+                    $this->logger->info('Email sent successfully');
+                } catch (\Exception $e) {
+                    $this->logger->error('Failed to send order confirmation email', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                        'order_id' => $order->getId(),
+                        'error_class' => get_class($e),
+                        'mailer_dsn' => $_ENV['MAILER_DSN'] ?? 'not set',
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine()
+                    ]);
+                    throw $e;
+                }
+
                 // 清空购物车
                 $session->remove('cart');
-
-                // 尝试发送邮件（但不影响订单提交）
-                try {
-                    $orderMailer->sendNewOrderNotification($order);
-                } catch (\Exception $e) {
-                    // 记录邮件发送失败，但不影响订单流程
-                }
 
                 // 显示成功页面
                 return $this->render('shop/success.html.twig', [
                     'order' => $order
                 ]);
             } catch (\Exception $e) {
-                // 添加具体的错误信息
-                $this->addFlash('error', '订单提交失败：' . $e->getMessage());
+                $this->logger->error('Order process failed', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+
+                $this->addFlash('error', '订单处理失败：' . $e->getMessage());
                 return $this->redirectToRoute('app_checkout');
             }
         } elseif ($form->isSubmitted()) {
@@ -263,17 +296,30 @@ class ShopController extends AbstractController
     }
 
     #[Route('/checkout/success/{id}', name: 'app_checkout_success')]
-    public function checkoutSuccess(
-        Order $order,
-        OrderMailer $orderMailer,
-        PushNotificationService $pushService
-    ): Response {
+    public function checkoutSuccess(Order $order, OrderMailer $orderMailer): Response
+    {
+        $this->logger->info('Starting checkout success process', [
+            'order_id' => $order->getId(),
+            'customer_email' => $order->getEmail()
+        ]);
+
         try {
+            // 发送订单确认邮件给客户
             $orderMailer->sendOrderConfirmation($order);
-            $pushService->sendNewOrderNotification($order);
+
+            $this->addFlash('success', '订单确认邮件已发送到您的邮箱');
         } catch (\Exception $e) {
-            error_log('Failed to send notifications: ' . $e->getMessage());
+            $this->logger->error('Failed to send emails', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->getId(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->addFlash('error', '订单已创建，但发送确认邮件时出现问题');
         }
+
+        $this->logger->info('Checkout success process completed', [
+            'order_id' => $order->getId()
+        ]);
 
         return $this->render('shop/order_success.html.twig', [
             'order' => $order

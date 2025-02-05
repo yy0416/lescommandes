@@ -9,8 +9,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LocaleController extends AbstractController
 {
-    #[Route('/change-locale/{locale}', name: 'change_locale')]
-    public function changeLocale(string $locale, Request $request): Response
+    #[Route('/change-locale/{locale}', name: 'change_locale', methods: ['POST'])]
+    public function changeLocale(Request $request, string $locale): Response
     {
         // 设置会话中的语言
         $request->getSession()->set('_locale', $locale);

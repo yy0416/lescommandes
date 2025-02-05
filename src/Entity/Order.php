@@ -49,8 +49,8 @@ class Order
     ])]
     private ?\DateTimeInterface $pickupTime = null;
 
-    #[ORM\Column(type: Types::INTEGER)]
-    private ?int $totalAmount = 0;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $totalAmount = 0;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;

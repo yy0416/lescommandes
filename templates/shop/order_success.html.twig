@@ -1,0 +1,16 @@
+<div class="card-body">
+	<h5 class="card-title">订单明细</h5>
+	{% for item in order.orderItems %}
+		<div class="d-flex justify-content-between mb-2">
+			<span>{{ item.product.name }}
+				×
+				{{ item.quantity }}</span>
+			<span>€{{ item.subtotal }}</span>
+		</div>
+	{% endfor %}
+	<hr>
+	<div class="d-flex justify-content-between">
+		<strong>总计</strong>
+		<strong>€{{ order.totalAmount }}</strong>
+	</div>
+</div>
