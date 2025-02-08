@@ -1,35 +1,52 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}订单详情
+{% block title %}
+	{{ 'order.detail.title'|trans }}
 {% endblock %}
 
 {% block body %}
 	<div class="container mt-4">
-		<h1 class="mb-4">订单详情</h1>
-
-		<div class="card mb-4">
-			<div class="card-body">
-				<h5 class="card-title">订单信息</h5>
-				<p>订单号:
-					{{ order.id }}</p>
-				<p>下单时间:
-					{{ order.createdAt|date('Y-m-d H:i:s') }}</p>
-				<p>订单状态:
-					{{ order.status }}</p>
+		<div class="card">
+			<div class="card-header">
+				{{ 'order.detail.number'|trans }}
+				#{{ order.id }}
 			</div>
-		</div>
-
-		<div class="card mb-4">
 			<div class="card-body">
-				<h5 class="card-title">商品清单</h5>
+				<h5 class="card-title">{{ 'order.detail.info'|trans }}</h5>
+				<div class="row mb-3">
+					<div class="col-md-6">
+						<p>
+							<strong>{{ 'order.detail.customer_name'|trans }}：</strong>
+							{{ order.customerName }}</p>
+						<p>
+							<strong>{{ 'order.detail.phone'|trans }}：</strong>
+							{{ order.phone }}</p>
+						<p>
+							<strong>{{ 'order.detail.email'|trans }}：</strong>
+							{{ order.email }}</p>
+					</div>
+					<div class="col-md-6">
+						<p>
+							<strong>{{ 'order.detail.pickup_location'|trans }}：</strong>
+							{{ order.pickupLocation.name }}</p>
+						<p>
+							<strong>{{ 'order.detail.pickup_time'|trans }}：</strong>
+							{{ order.pickupTime|date('Y-m-d H:i') }}</p>
+						<p>
+							<strong>{{ 'order.detail.created_at'|trans }}：</strong>
+							{{ order.createdAt|date('Y-m-d H:i:s') }}</p>
+					</div>
+				</div>
+
+				<h5 class="card-title">{{ 'order.detail.items'|trans }}</h5>
 				<div class="table-responsive">
 					<table class="table">
 						<thead>
 							<tr>
-								<th>商品</th>
-								<th>单价</th>
-								<th>数量</th>
-								<th>小计</th>
+								<th>{{ 'order.detail.product_name'|trans }}</th>
+								<th>{{ 'order.detail.unit_price'|trans }}</th>
+								<th>{{ 'order.detail.quantity'|trans }}</th>
+								<th>{{ 'order.detail.subtotal'|trans }}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -45,7 +62,7 @@
 						<tfoot>
 							<tr>
 								<td colspan="3" class="text-right">
-									<strong>总计:</strong>
+									<strong>{{ 'order.detail.total'|trans }}:</strong>
 								</td>
 								<td>
 									<strong>¥{{ order.totalAmount }}</strong>
@@ -58,7 +75,7 @@
 		</div>
 
 		<div class="text-right">
-			<a href="{{ path('app_orders') }}" class="btn btn-secondary">返回订单列表</a>
+			<a href="{{ path('app_orders') }}" class="btn btn-secondary">{{ 'order.detail.back_to_list'|trans }}</a>
 		</div>
 	</div>
 {% endblock %}

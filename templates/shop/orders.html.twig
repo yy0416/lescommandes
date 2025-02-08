@@ -1,31 +1,38 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}我的订单
+{% block title %}
+	{{ 'order.list.title'|trans }}
 {% endblock %}
 
 {% block body %}
 	<div class="container mt-4">
-		<h1 class="mb-4">我的订单</h1>
+		<h1 class="mb-4">{{ 'order.list.title'|trans }}</h1>
 
 		{% if orders|length > 0 %}
 			<div class="table-responsive">
 				<table class="table">
 					<thead>
 						<tr>
-							<th>订单号</th>
-							<th>下单时间</th>
-							<th>订单金额</th>
-							<th>操作</th>
+							<th>{{ 'order.list.order_number'|trans }}</th>
+							<th>{{ 'order.list.order_date'|trans }}</th>
+							<th>{{ 'order.list.total_amount'|trans }}</th>
+							<th>{{ 'order.list.pickup_time'|trans }}</th>
+							<th>{{ 'order.list.pickup_location'|trans }}</th>
+							<th>{{ 'order.list.actions'|trans }}</th>
 						</tr>
 					</thead>
 					<tbody>
 						{% for order in orders %}
 							<tr>
-								<td>{{ order.id }}</td>
+								<td>#{{ order.id }}</td>
 								<td>{{ order.createdAt|date('Y-m-d H:i:s') }}</td>
-								<td>¥{{ order.totalAmount }}</td>
+								<td>€{{ order.totalAmount }}</td>
+								<td>{{ order.pickupTime|date('Y-m-d H:i') }}</td>
+								<td>{{ order.pickupLocation.name }}</td>
 								<td>
-									<a href="{{ path('app_order_detail', {'id': order.id}) }}" class="btn btn-primary btn-sm">查看详情</a>
+									<a href="{{ path('app_order_detail', {'id': order.id}) }}" class="btn btn-sm btn-primary">
+										{{ 'order.list.view_details'|trans }}
+									</a>
 								</td>
 							</tr>
 						{% endfor %}
@@ -33,9 +40,9 @@
 				</table>
 			</div>
 		{% else %}
-			<p>暂无订单。
-				<a href="{{ path('app_shop') }}">去购物</a>
-			</p>
+			<div class="text-center py-5">
+				<p>{{ 'order.list.no_orders'|trans }}</p>
+			</div>
 		{% endif %}
 	</div>
 {% endblock %}

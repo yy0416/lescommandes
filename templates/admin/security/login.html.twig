@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ 'admin.login.title'|trans }}
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-5">
+		<div class="row justify-content-center">
+			<div class="col-md-6">
+				<div class="card">
+					<div class="card-body">
+						<h1 class="h3 mb-3 text-center">{{ 'admin.login.title'|trans }}</h1>
+
+						{% if error %}
+							<div class="alert alert-danger">
+								{{ error.messageKey is defined ? error.messageKey|trans(error.messageData, 'security') : error.message }}
+							</div>
+						{% endif %}
+
+						{% for message in app.flashes('error') %}
+							<div class="alert alert-danger">
+								{{ message }}
+							</div>
+						{% endfor %}
+
+						<form method="post">
+							<input
+							type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+							{# 添加调试信息 #}
+							{% if app.debug %}
+								<div
+									class="d-none"><!-- CSRF Token: {{ csrf_token('authenticate') }} -->
+								</div>
+							{% endif %}
+
+							<div class="form-group">
+								<label for="email">{{ 'admin.login.email'|trans }}</label>
+								<input type="email" id="email" name="_username" class="form-control" value="{{ last_username }}" required autofocus>
+							</div>
+
+							<div class="form-group mt-3">
+								<label for="password">{{ 'admin.login.password'|trans }}</label>
+								<input type="password" id="password" name="_password" class="form-control" required>
+							</div>
+
+							<div class="d-grid gap-2 mt-4">
+								<button class="btn btn-primary" type="submit">{{ 'admin.login.submit'|trans }}</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

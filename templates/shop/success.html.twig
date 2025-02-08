@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}订单提交成功
+{% block title %}
+	{{ 'order.submit_success'|trans }}
 {% endblock %}
 
 {% block body %}
@@ -9,14 +10,14 @@
 			<div class="card-body text-center">
 				<h1 class="card-title text-success mb-4">
 					<i class="fas fa-check-circle"></i>
-					订单提交成功！
+					{{ 'order.success_message'|trans }}
 				</h1>
-				<p class="card-text">订单号:
+				<p class="card-text">{{ 'order.number'|trans }}:
 					{{ order.id }}</p>
-				<p class="card-text">订单金额: €{{ order.totalAmount }}</p>
-				<p class="card-text">我们会尽快处理您的订单</p>
+				<p class="card-text">{{ 'order.total'|trans }}: €{{ order.totalAmount }}</p>
+				<p class="card-text">{{ 'order.processing_message'|trans }}</p>
 				<div class="mt-4">
-					<a href="{{ path('app_shop') }}" class="btn btn-primary">继续购物</a>
+					<a href="{{ path('app_shop') }}" class="btn btn-primary">{{ 'shop.continue_shopping'|trans }}</a>
 				</div>
 			</div>
 		</div>

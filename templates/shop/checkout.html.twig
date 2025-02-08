@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}结算
+{% block title %}
+	{{ 'checkout.title'|trans }}
 {% endblock %}
 
 {% block stylesheets %}
@@ -68,13 +69,13 @@
 			</div>
 		{% endfor %}
 
-		<h1 class="mb-4">订单结算</h1>
+		<h1 class="mb-4">{{ 'checkout.title'|trans }}</h1>
 
 		<div class="row">
 			<div class="col-md-8">
 				<div class="card mb-4">
 					<div class="card-body">
-						<h5 class="card-title">收货信息</h5>
+						<h5 class="card-title">{{ 'checkout.order_info'|trans }}</h5>
 						{{ form_start(form, {
 							'attr': {
 								'class': 'needs-validation',
@@ -85,15 +86,15 @@
 						}) }}
 						<div class="row">
 							<div class="col-md-6">
-								{{ form_label(form.customerName) }}
-								{{ form_widget(form.customerName, {'attr': {'class': 'form-control'}}) }}
+								{{ form_label(form.customerName, 'checkout.customer_name'|trans) }}
+								{{ form_widget(form.customerName, {'attr': {'class': 'form-control', 'placeholder': 'checkout.form.customer_name'|trans}}) }}
 								<div class="invalid-feedback">
 									{{ form_errors(form.customerName) }}
 								</div>
 							</div>
 							<div class="col-md-6">
-								{{ form_label(form.phone) }}
-								{{ form_widget(form.phone, {'attr': {'class': 'form-control'}}) }}
+								{{ form_label(form.phone, 'checkout.phone'|trans) }}
+								{{ form_widget(form.phone, {'attr': {'class': 'form-control', 'placeholder': 'checkout.form.phone'|trans}}) }}
 								<div class="invalid-feedback">
 									{{ form_errors(form.phone) }}
 								</div>
@@ -101,15 +102,15 @@
 						</div>
 						<div class="row">
 							<div class="col-md-6">
-								{{ form_label(form.email) }}
-								{{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+								{{ form_label(form.email, 'checkout.email'|trans) }}
+								{{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'checkout.form.email'|trans}}) }}
 								<div class="invalid-feedback">
 									{{ form_errors(form.email) }}
 								</div>
 							</div>
 							<div class="col-md-6">
-								{{ form_label(form.pickupLocation) }}
-								{{ form_widget(form.pickupLocation, {'attr': {'class': 'form-control'}}) }}
+								{{ form_label(form.pickupLocation, 'checkout.pickup_location'|trans) }}
+								{{ form_widget(form.pickupLocation, {'attr': {'class': 'form-control', 'placeholder': 'checkout.form.pickup_location'|trans}}) }}
 								<div class="invalid-feedback">
 									{{ form_errors(form.pickupLocation) }}
 								</div>
@@ -117,14 +118,17 @@
 						</div>
 						<div class="row">
 							<div class="col-md-6">
-								{{ form_label(form.pickupTime) }}
-								{{ form_widget(form.pickupTime, {'attr': {'class': 'form-control'}}) }}
+								{{ form_label(form.pickupTime, 'checkout.pickup_time'|trans) }}
+								{{ form_widget(form.pickupTime, {'attr': {'class': 'form-control', 'placeholder': 'checkout.form.pickup_time'|trans}}) }}
 								<div class="invalid-feedback">
 									{{ form_errors(form.pickupTime) }}
 								</div>
 							</div>
 						</div>
-						<button type="submit" class="btn btn-primary">{{ 'checkout.place_order'|trans }}</button>
+						<div class="d-flex justify-content-between mt-4">
+							<a href="{{ path('app_cart') }}" class="btn btn-secondary">{{ 'checkout.back_to_cart'|trans }}</a>
+							<button type="submit" class="btn btn-primary">{{ 'checkout.place_order'|trans }}</button>
+						</div>
 						{{ form_end(form) }}
 					</div>
 				</div>
@@ -133,7 +137,7 @@
 			<div class="col-md-4">
 				<div class="card">
 					<div class="card-body">
-						<h5 class="card-title">订单明细</h5>
+						<h5 class="card-title">{{ 'checkout.summary'|trans }}</h5>
 						{% for item in cart %}
 							<div class="d-flex justify-content-between mb-2">
 								<span>{{ item.product.name }}
@@ -144,7 +148,7 @@
 						{% endfor %}
 						<hr>
 						<div class="d-flex justify-content-between">
-							<strong>总计:</strong>
+							<strong>{{ 'checkout.total'|trans }}</strong>
 							<strong>€{{ total }}</strong>
 						</div>
 					</div>

@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}商品列表
+{% block title %}
+	{{ 'shop.index.title'|trans }}
 {% endblock %}
 
 {% block stylesheets %}
@@ -70,6 +71,8 @@
 			</div>
 		{% endfor %}
 
+		<h1 class="mb-4">{{ 'shop.index.title'|trans }}</h1>
+
 		<div class="product-grid">
 			{% for product in products %}
 				<div class="product-card">
@@ -80,11 +83,15 @@
 					</div>
 					<div class="card-body d-flex flex-column p-3">
 						<h5 class="card-title mb-2">{{ product.name }}</h5>
-						<p class="card-text mb-3">€{{ product.price }}</p>
+						<p class="card-text mb-3">{{ 'shop.index.price'|trans }}{{ product.price }}</p>
+						{% if product.description %}
+							<p class="card-text description">{{ 'shop.index.description'|trans }}:
+								{{ product.description|striptags|raw }}</p>
+						{% endif %}
 						<form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST" class="mt-auto">
 							<div class="input-group">
-								<input type="number" name="quantity" value="1" min="1" class="form-control">
-								<button type="submit" class="btn btn-primary">加入购物车</button>
+								<input type="number" name="quantity" value="1" min="1" class="form-control" placeholder="{{ 'shop.index.quantity'|trans }}">
+								<button type="submit" class="btn btn-primary">{{ 'shop.index.add_to_cart'|trans }}</button>
 							</div>
 						</form>
 					</div>

@@ -321,7 +321,7 @@ class ShopController extends AbstractController
             'order_id' => $order->getId()
         ]);
 
-        return $this->render('shop/order_success.html.twig', [
+        return $this->render('shop/success.html.twig', [
             'order' => $order
         ]);
     }
