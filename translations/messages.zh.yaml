@@ -60,7 +60,7 @@ order:
   email_sent: "订单确认邮件已发送到您的邮箱"
   number: "订单号"
   total: "订单金额"
-  processing_message: "我们会尽快处理您的订单"
+  processing_message: "我们将尽快处理您的订单"
   detail:
     title: "订单详情"
     number: "订单"
