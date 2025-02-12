@@ -2,12 +2,14 @@
 
 namespace App\Service;
 
+
 use App\Entity\Order;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Mailer\Transport\TransportInterface;
+use Twig\Environment;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class OrderMailer
 {
@@ -15,97 +17,65 @@ class OrderMailer
         private MailerInterface $mailer,
         private string $adminEmail,
         private string $systemEmail,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private Environment $twig,
+        private RequestStack $requestStack
     ) {}
-    /*
-    // 发送给管理员的新订单通知
-    public function sendNewOrderNotification(Order $order): void
-    {
-        try {
-            $this->logger->info('Attempting to send new order notification to admin', [
-                'order_id' => $order->getId(),
-                'admin_email' => $this->adminEmail
-            ]);
-
-            $adminEmail = (new TemplatedEmail())
-                ->from(new Address($this->systemEmail, '商品订购系统'))
-                ->to(new Address($this->adminEmail, 'Admin'))
-                ->subject('新订单通知 #' . $order->getId())
-                ->htmlTemplate('emails/admin_new_order.html.twig')
-                ->context([
-                    'order' => $order
-                ]);
-
-            $this->mailer->send($adminEmail);
-            $this->logger->info('Admin notification sent successfully');
-        } catch (\Exception $e) {
-            $this->logger->error('Failed to send admin notification', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            throw $e;
-        }
-    }*/
 
     // 发送给客户的订单确认邮件
     public function sendOrderConfirmation(Order $order): void
     {
         try {
-            $this->logger->debug('Starting email send process', [
-                'php_version' => PHP_VERSION,
-                'symfony_env' => $_ENV['APP_ENV'],
-                'mailer_dsn' => $_ENV['MAILER_DSN'],
-                'openssl_version' => OPENSSL_VERSION_TEXT
-            ]);
+            $locale = $this->requestStack->getCurrentRequest()?->getLocale() ?? 'fr';
+            $template = sprintf('emails/order_confirmation.%s.html.twig', $locale);
 
-            if (!$order->getEmail()) {
-                throw new \RuntimeException('Order email is missing');
+            // 确保模板存在，否则使用默认模板
+            if (!$this->twig->getLoader()->exists($template)) {
+                $template = 'emails/order_confirmation.fr.html.twig';
             }
 
-            $this->logger->info('Attempting to send order confirmation email', [
+            $this->logger->info('Preparing to send order confirmation email', [
                 'order_id' => $order->getId(),
                 'customer_email' => $order->getEmail(),
-                'customer_name' => $order->getCustomerName(),
-                'has_order_items' => $order->getOrderItems()->count() > 0,
+                'locale' => $locale,
+                'template' => $template,
                 'total_amount' => $order->getTotalAmount(),
-                'system_email' => $this->systemEmail,
-                'mailer_dsn' => $_ENV['MAILER_DSN'] ?? 'not set'
+                'system_email' => $this->systemEmail
             ]);
 
             $email = (new TemplatedEmail())
-                ->from(new Address($this->systemEmail, '商品订购系统'))
+                ->from(new Address($this->systemEmail, 'Votre Boutique'))
                 ->to(new Address($order->getEmail(), $order->getCustomerName()))
-                ->subject('订单确认通知 #' . $order->getId())
-                ->htmlTemplate('emails/customer_order_confirmation.html.twig')
+                ->subject('Order Confirmation #' . $order->getId())
+                ->htmlTemplate($template)
                 ->context([
                     'order' => $order,
-                    'adminEmail' => $this->adminEmail
+                    'orderNumber' => $order->getId(),
+                    'customerName' => $order->getCustomerName(),
+                    'totalAmount' => $order->getTotalAmount(),
+                    'pickupTime' => $order->getPickupTime()?->format('Y-m-d H:i') ?? 'N/A',
+                    'pickupLocation' => $order->getPickupLocation()?->getName() ?? 'N/A'
                 ]);
 
-            // 检查邮件模板渲染
-            try {
-                $html = $email->getHtmlBody();
-                $this->logger->debug('Email template rendered successfully', [
-                    'length' => strlen($html),
-                    'template_path' => 'emails/customer_order_confirmation.html.twig'
-                ]);
-            } catch (\Exception $e) {
-                $this->logger->error('Failed to render email template', [
-                    'error' => $e->getMessage(),
-                    'template_path' => 'emails/customer_order_confirmation.html.twig'
-                ]);
-                throw $e;
-            }
+            // 验证模板渲染
+            $renderedEmail = $this->twig->render($template, [
+                'order' => $order,
+                'orderNumber' => $order->getId(),
+                'customerName' => $order->getCustomerName(),
+                'totalAmount' => $order->getTotalAmount(),
+                'pickupTime' => $order->getPickupTime()?->format('Y-m-d H:i') ?? 'N/A',
+                'pickupLocation' => $order->getPickupLocation()?->getName() ?? 'N/A'
+            ]);
+
+            $this->logger->debug('Email content preview', ['content' => $renderedEmail]);
 
             $this->mailer->send($email);
+
             $this->logger->info('Order confirmation email sent successfully');
         } catch (\Exception $e) {
-            $this->logger->error('Failed to send order confirmation', [
+            $this->logger->error('Failed to send order confirmation email', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'error_class' => get_class($e),
-                'system_email' => $this->systemEmail,
-                'customer_email' => $order->getEmail()
+                'trace' => $e->getTraceAsString()
             ]);
             throw $e;
         }

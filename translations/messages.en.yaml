@@ -55,6 +55,7 @@ menu:
 order:
   submit_success: "Order Submitted Successfully"
   success_message: "Order submitted successfully!"
+  email_sent: "Order confirmation email has been sent to your inbox"
   number: "Order Number"
   total: "Order Total"
   processing_message: "We will process your order as soon as possible"
@@ -87,6 +88,12 @@ order:
     pickup_info: "Pickup Information"
     pickup_time: "Pickup Time"
     pickup_location: "Pickup Location"
+  error:
+    name_required: "Please enter your name"
+    email_required: "Please enter your email"
+    email_invalid: "Please enter a valid email address"
+    phone_required: "Please enter your phone number"
+    phone_invalid: "Please enter a valid 10-digit phone number"
 shop:
   continue_shopping: "Continue Shopping"
   index:
@@ -97,3 +104,9 @@ shop:
     out_of_stock: "Out of Stock"
     description: "Description"
     confirm_add: "Add this item to cart?"
+email:
+  order:
+    subject: "Order Confirmation #%id%"
+  form:
+    error:
+      validation: "Form validation failed, please check your input"

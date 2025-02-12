@@ -43,3 +43,13 @@ services:
       $vapidPublicKey: "%webpush.public_key%"
       $vapidPrivateKey: "%webpush.private_key%"
       $vapidSubject: "%webpush.subject%"
+
+  App\Service\OrderService:
+    arguments:
+      $entityManager: "@doctrine.orm.entity_manager"
+      $mailer: "@mailer.mailer"
+      $twig: "@twig"
+      $requestStack: "@request_stack"
+      $translator: "@translator"
+      $logger: "@logger"
+      $adminEmail: "%env(ADMIN_EMAIL)%"

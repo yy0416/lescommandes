@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "dev": "encore dev",
+    "build": "encore production"
+  },
+  "devDependencies": {
+    "@symfony/webpack-encore": "^4.0.0",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "private": true,
+  "name": "lescommandes",
+  "version": "1.0.0",
+  "main": "webpack.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

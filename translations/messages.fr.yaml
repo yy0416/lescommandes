@@ -55,6 +55,7 @@ menu:
 order:
   submit_success: "Commande Soumise avec Succès"
   success_message: "Commande soumise avec succès !"
+  email_sent: "L'email de confirmation de commande a été envoyé à votre boîte de réception"
   number: "Numéro de Commande"
   total: "Montant Total"
   processing_message: "Nous traiterons votre commande dans les plus brefs délais"
@@ -87,6 +88,12 @@ order:
     pickup_info: "Informations de Retrait"
     pickup_time: "Heure de Retrait"
     pickup_location: "Point de Retrait"
+  error:
+    name_required: "Veuillez entrer votre nom"
+    email_required: "Veuillez entrer votre email"
+    email_invalid: "Veuillez entrer une adresse email valide"
+    phone_required: "Veuillez entrer votre numéro de téléphone"
+    phone_invalid: "Veuillez entrer un numéro de téléphone à 10 chiffres valide"
 shop:
   continue_shopping: "Continuer vos Achats"
   index:
@@ -97,3 +104,9 @@ shop:
     out_of_stock: "En Rupture de Stock"
     description: "Description"
     confirm_add: "Ajouter cet article au panier ?"
+email:
+  order:
+    subject: "Confirmation de commande #%id%"
+  form:
+    error:
+      validation: "La validation du formulaire a échoué, veuillez vérifier vos entrées"

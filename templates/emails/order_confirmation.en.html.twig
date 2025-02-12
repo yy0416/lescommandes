@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Order Confirmation</title>
+		<style>
+			body {
+				font-family: 'Arial', sans-serif;
+				line-height: 1.6;
+				color: #333;
+				max-width: 600px;
+				margin: 0 auto;
+				padding: 20px;
+			}
+			.container {
+				background-color: #ffffff;
+				border-radius: 5px;
+				padding: 20px;
+				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			}
+			.header {
+				text-align: center;
+				padding-bottom: 20px;
+				border-bottom: 2px solid #f0f0f0;
+				margin-bottom: 20px;
+			}
+			.order-details {
+				margin: 20px 0;
+				padding: 15px;
+				background-color: #f8f9fa;
+				border-radius: 4px;
+			}
+			.items-table {
+				width: 100%;
+				border-collapse: collapse;
+				margin: 20px 0;
+			}
+			.items-table th,
+			.items-table td {
+				padding: 10px;
+				border-bottom: 1px solid #ddd;
+				text-align: left;
+			}
+			.footer {
+				margin-top: 30px;
+				padding-top: 20px;
+				border-top: 2px solid #f0f0f0;
+				text-align: center;
+			}
+			.btn {
+				display: inline-block;
+				padding: 10px 20px;
+				background-color: #007bff;
+				color: white;
+				text-decoration: none;
+				border-radius: 5px;
+				margin-top: 15px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>Order Confirmation #{{ order.id }}</h1>
+				<p>Thank you for your order!</p>
+			</div>
+
+			<div class="order-details">
+				<h2>Order Details</h2>
+				<table class="items-table">
+					<thead>
+						<tr>
+							<th>Product</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th>Subtotal</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for item in order.orderItems %}
+							<tr>
+								<td>{{ item.product.name }}</td>
+								<td>{{ item.quantity }}</td>
+								<td>€{{ item.price }}</td>
+								<td>€{{ item.subtotal }}</td>
+							</tr>
+						{% endfor %}
+						<tr>
+							<td colspan="3">
+								<strong>Total</strong>
+							</td>
+							<td>
+								<strong>€{{ order.totalAmount }}</strong>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="pickup-info">
+				<h2>Pickup Information</h2>
+				<p>
+					<strong>Pickup Location:</strong>
+					{{ order.pickupLocation.name }}<br>
+					<strong>Address:</strong>
+					{{ order.pickupLocation.address }}<br>
+					<strong>Date and Time:</strong>
+					{{ order.pickupTime|date('d/m/Y H:i') }}
+				</p>
+			</div>
+
+			<div class="footer">
+				<p>If you have any questions, please don't hesitate to contact us</p>
+				<a href="{{ absolute_url(path('app_shop')) }}" class="btn">Visit our website</a>
+			</div>
+		</div>
+	</body>
+</html>

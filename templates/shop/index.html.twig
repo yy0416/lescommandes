@@ -90,7 +90,7 @@
 						{% endif %}
 						<form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST" class="mt-auto">
 							<div class="input-group">
-								<input type="number" name="quantity" value="1" min="1" class="form-control" placeholder="{{ 'shop.index.quantity'|trans }}">
+								<input type="number" name="quantity" value="1" min="1" class="form-control quantity-input">
 								<button type="submit" class="btn btn-primary">{{ 'shop.index.add_to_cart'|trans }}</button>
 							</div>
 						</form>

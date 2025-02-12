@@ -46,6 +46,8 @@ checkout:
       invalid_phone: "请输入有效的法国手机号码"
       invalid_email: "请输入有效的电子邮箱地址"
       pickup_time_advance: "取货时间必须至少提前24小时预约"
+    error:
+      validation: "表单验证失败，请检查输入内容"
 menu:
   dashboard: "管理后台"
   products: "产品管理"
@@ -55,6 +57,7 @@ menu:
 order:
   submit_success: "订单提交成功"
   success_message: "订单提交成功！"
+  email_sent: "订单确认邮件已发送到您的邮箱"
   number: "订单号"
   total: "订单金额"
   processing_message: "我们会尽快处理您的订单"
@@ -104,3 +107,12 @@ admin:
     password: "密码"
     submit: "登录"
     error: "用户名或密码错误"
+email:
+  order:
+    subject: "订单确认 #%id%"
+order.error:
+  name_required: "请输入您的姓名"
+  email_required: "请输入您的电子邮箱"
+  email_invalid: "请输入有效的电子邮箱地址"
+  phone_required: "请输入您的手机号码"
+  phone_invalid: "请输入有效的10位手机号码"

@@ -65,7 +65,9 @@ class OrderCrudController extends AbstractCrudController
             ->setPageTitle('detail', fn(Order $order) => sprintf('订单 #%s', $order->getId()))
             ->setHelp('index', $help)
             ->setDefaultSort(['createdAt' => 'DESC'])
-            ->showEntityActionsInlined();
+            ->showEntityActionsInlined()
+            ->setPaginatorPageSize(100000)
+            ->setPaginatorRangeSize(0);
     }
 
     public function configureFields(string $pageName): iterable

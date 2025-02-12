@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>订单确认</title>
+		<style>
+			body {
+				font-family: 'Arial', sans-serif;
+				line-height: 1.6;
+				color: #333;
+				max-width: 600px;
+				margin: 0 auto;
+				padding: 20px;
+				background-color: #f5f5f5;
+			}
+			.container {
+				background-color: #ffffff;
+				padding: 30px;
+				border-radius: 8px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+			.header {
+				text-align: center;
+				padding-bottom: 20px;
+				border-bottom: 2px solid #f0f0f0;
+				margin-bottom: 20px;
+			}
+			.order-number {
+				color: #2c3e50;
+				font-size: 24px;
+				font-weight: bold;
+			}
+			.items-list {
+				background-color: #f8f9fa;
+				padding: 15px;
+				border-radius: 6px;
+				margin: 20px 0;
+			}
+			.item {
+				padding: 10px 0;
+				border-bottom: 1px solid #eee;
+			}
+			.item:last-child {
+				border-bottom: none;
+			}
+			.total {
+				background-color: #2c3e50;
+				color: white;
+				padding: 15px;
+				border-radius: 6px;
+				text-align: right;
+				margin: 20px 0;
+			}
+			.pickup-info {
+				background-color: #e8f4fd;
+				padding: 15px;
+				border-radius: 6px;
+				margin: 20px 0;
+			}
+			.footer {
+				text-align: center;
+				color: #666;
+				margin-top: 30px;
+				padding-top: 20px;
+				border-top: 1px solid #eee;
+			}
+			.btn {
+				display: inline-block;
+				padding: 10px 20px;
+				background-color: #3498db;
+				color: white;
+				text-decoration: none;
+				border-radius: 5px;
+				margin-top: 15px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1 class="order-number">订单确认 #{{ order.id }}</h1>
+				<p>感谢您的订购！</p>
+			</div>
+
+			<p>您好
+				{{ order.customerName }}，</p>
+			<p>我们已收到您的订单。以下是订单详情：</p>
+
+			<div class="items-list">
+				<h2>订购商品：</h2>
+				{% for item in order.orderItems %}
+					<div class="item">
+						<strong>{{ item.product.name }}</strong><br>
+						数量：{{ item.quantity }}
+						| 价格：€{{ item.price }}
+					</div>
+				{% endfor %}
+			</div>
+
+			<div class="total">
+				<h3>总计：€{{ order.totalAmount }}</h3>
+			</div>
+
+			<div class="pickup-info">
+				<h2>取货信息：</h2>
+				<p>
+					<strong>取货地点：</strong>
+					{{ order.pickupLocation.name }}<br>
+					<strong>地址：</strong>
+					{{ order.pickupLocation.address }}<br>
+					<strong>日期和时间：</strong>
+					{{ order.pickupTime|date('Y-m-d H:i') }}
+				</p>
+			</div>
+
+			<div class="footer">
+				<p>如有任何问题，请随时联系我们</p>
+				<a href="{{ absolute_url(path('app_shop')) }}" class="btn">访问我们的网站</a>
+			</div>
+		</div>
+	</body>
+</html>

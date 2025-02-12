@@ -37,7 +37,9 @@ class PickupTimeSlotCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('取货时间管理')
             ->setPageTitle('index', '取货时间段列表')
             ->setPageTitle('new', '新增时间段')
-            ->setPageTitle('edit', fn(PickupTimeSlot $timeSlot) => sprintf('编辑时间段 - %s', $timeSlot));
+            ->setPageTitle('edit', fn(PickupTimeSlot $timeSlot) => sprintf('编辑时间段 - %s', $timeSlot))
+            ->setPaginatorPageSize(100000)
+            ->setPaginatorRangeSize(0);
     }
 
     public function configureFields(string $pageName): iterable

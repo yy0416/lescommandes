@@ -64,8 +64,22 @@
 		class="container mt-4">
 		{# 显示错误信息 #}
 		{% for message in app.flashes('error') %}
-			<div class="alert alert-danger">
-				{{ message }}
+			<div class="alert alert-danger alert-dismissible fade show">
+				<h5 class="alert-heading">表单验证错误：</h5>
+				<p>{{ message }}</p>
+				{% if form is defined and not form.vars.valid %}
+					<ul class="mb-0">
+						{% for error in form.vars.errors %}
+							<li>{{ error.message }}</li>
+						{% endfor %}
+						{% for child in form.children %}
+							{% for error in child.vars.errors %}
+								<li>{{ error.message }}</li>
+							{% endfor %}
+						{% endfor %}
+					</ul>
+				{% endif %}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 			</div>
 		{% endfor %}
 
@@ -84,11 +98,27 @@
 								'data-turbo': 'false'
 							}
 						}) }}
+						{{ form_widget(form._token) }}
+						{# 显示表单的全局错误 #}
+						{% if not form.vars.valid %}
+							<div class="alert alert-danger">
+								<ul class="mb-0">
+									{% for error in form.vars.errors %}
+										<li>{{ error.message|trans }}</li>
+									{% endfor %}
+									{% for child in form.children %}
+										{% for error in child.vars.errors %}
+											<li>{{ error.message|trans }}</li>
+										{% endfor %}
+									{% endfor %}
+								</ul>
+							</div>
+						{% endif %}
 						<div class="row">
 							<div class="col-md-6">
 								{{ form_label(form.customerName, 'checkout.customer_name'|trans) }}
 								{{ form_widget(form.customerName, {'attr': {'class': 'form-control', 'placeholder': 'checkout.form.customer_name'|trans}}) }}
-								<div class="invalid-feedback">
+								<div class="text-danger">
 									{{ form_errors(form.customerName) }}
 								</div>
 							</div>
@@ -104,14 +134,14 @@
 							<div class="col-md-6">
 								{{ form_label(form.email, 'checkout.email'|trans) }}
 								{{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'checkout.form.email'|trans}}) }}
-								<div class="invalid-feedback">
+								<div class="text-danger">
 									{{ form_errors(form.email) }}
 								</div>
 							</div>
 							<div class="col-md-6">
 								{{ form_label(form.pickupLocation, 'checkout.pickup_location'|trans) }}
 								{{ form_widget(form.pickupLocation, {'attr': {'class': 'form-control', 'placeholder': 'checkout.form.pickup_location'|trans}}) }}
-								<div class="invalid-feedback">
+								<div class="text-danger">
 									{{ form_errors(form.pickupLocation) }}
 								</div>
 							</div>
@@ -120,7 +150,7 @@
 							<div class="col-md-6">
 								{{ form_label(form.pickupTime, 'checkout.pickup_time'|trans) }}
 								{{ form_widget(form.pickupTime, {'attr': {'class': 'form-control', 'placeholder': 'checkout.form.pickup_time'|trans}}) }}
-								<div class="invalid-feedback">
+								<div class="text-danger">
 									{{ form_errors(form.pickupTime) }}
 								</div>
 							</div>

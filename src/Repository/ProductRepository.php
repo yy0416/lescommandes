@@ -12,4 +12,14 @@ class ProductRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Product::class);
     }
+
+    public function findAllActive(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.isDeleted = :isDeleted')
+            ->setParameter('isDeleted', false)
+            ->orderBy('p.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

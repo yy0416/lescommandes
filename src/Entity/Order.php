@@ -19,7 +19,7 @@ class Order
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter your WeChat name')]
+    #[Assert\NotBlank(message: 'order.error.name_required')]
     private ?string $customerName = null;
 
     #[ORM\Column(length: 255)]
@@ -31,21 +31,20 @@ class Order
     private ?string $phone = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: '请输入电子邮箱')]
-    #[Assert\Email(
-        message: '请输入有效的电子邮箱地址'
-    )]
+    #[Assert\NotBlank(message: 'order.error.email_required')]
+    #[Assert\Email(message: 'order.error.email_invalid')]
     private ?string $email = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: '请选择取货地点')]
     private ?PickupLocation $pickupLocation = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank(message: 'Please select a pickup time')]
+    #[Assert\NotNull(message: '请选择取货时间')]
     #[Assert\GreaterThan([
         'value' => '+24 hours',
-        'message' => 'Pickup time must be at least 24 hours in advance'
+        'message' => '取货时间必须至少提前24小时预约'
     ])]
     private ?\DateTimeInterface $pickupTime = null;
 

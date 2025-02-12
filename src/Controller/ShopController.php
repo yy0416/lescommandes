@@ -16,20 +16,30 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
 
 class ShopController extends AbstractController
 {
     private $logger;
+    private $csrfTokenManager;
+    private $translator;
 
-    public function __construct(LoggerInterface $logger)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        TranslatorInterface $translator
+    ) {
         $this->logger = $logger;
+        $this->csrfTokenManager = $csrfTokenManager;
+        $this->translator = $translator;
     }
 
     #[Route('/', name: 'app_shop')]
     public function index(EntityManagerInterface $entityManager): Response
     {
-        $products = $entityManager->getRepository(Product::class)->findAll();
+        $products = $entityManager->getRepository(Product::class)->findAllActive();
 
         return $this->render('shop/index.html.twig', [
             'products' => $products
@@ -43,9 +53,16 @@ class ShopController extends AbstractController
         $cartItems = [];
         $total = 0;
 
+        if (empty($cart)) {
+            return $this->render('shop/cart.html.twig', [
+                'items' => [],
+                'total' => 0
+            ]);
+        }
+
         foreach ($cart as $id => $quantity) {
             $product = $entityManager->getRepository(Product::class)->find($id);
-            if ($product) {
+            if ($product && !$product->isDeleted()) {
                 $cartItems[] = [
                     'product' => $product,
                     'quantity' => $quantity,
@@ -75,7 +92,7 @@ class ShopController extends AbstractController
         }
 
         $session->set('cart', $cart);
-        $this->addFlash('success', '商品已添加到购物车');
+        $this->addFlash('success', 'Le produit a été ajouté au panier.');
 
         return $this->redirectToRoute('app_cart');
     }
@@ -136,28 +153,20 @@ class ShopController extends AbstractController
     }
 
     #[Route('/checkout', name: 'app_checkout')]
-    public function checkout(
-        Request $request,
-        SessionInterface $session,
-        EntityManagerInterface $entityManager,
-        OrderMailer $orderMailer
-    ): Response {
-        // 1. 检查购物车是否为空
+    public function checkout(Request $request, EntityManagerInterface $entityManager, SessionInterface $session): Response
+    {
         $cart = $session->get('cart', []);
+        $cartItems = [];
+        $total = 0;
+
         if (empty($cart)) {
+            $this->addFlash('error', 'Your cart is empty');
             return $this->redirectToRoute('app_cart');
         }
 
-        // 2. 准备订单和购物车数据
-        $order = new Order();
-        $form = $this->createForm(OrderType::class, $order);
-        $form->handleRequest($request);
-
-        $total = 0;
-        $cartItems = [];
         foreach ($cart as $id => $quantity) {
             $product = $entityManager->getRepository(Product::class)->find($id);
-            if ($product) {
+            if ($product && !$product->isDeleted()) {
                 $cartItems[] = [
                     'product' => $product,
                     'quantity' => $quantity,
@@ -167,15 +176,18 @@ class ShopController extends AbstractController
             }
         }
 
-        // 3. 处理表单提交
+        $order = new Order();
+        $form = $this->createForm(OrderType::class, $order, [
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id'   => 'checkout_form'
+        ]);
+        $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                // 设置订单基本信息
-                $order = $form->getData();
                 $order->setCreatedAt(new \DateTimeImmutable());
-                $order->setTotalAmount($total);
 
-                // 添加订单项
                 foreach ($cartItems as $item) {
                     $orderItem = new OrderItem();
                     $orderItem->setOrder($order);
@@ -185,88 +197,43 @@ class ShopController extends AbstractController
                     $order->addOrderItem($orderItem);
                 }
 
-                // 保存订单
+                $order->calculateTotal();
+
                 $entityManager->persist($order);
                 $entityManager->flush();
 
-                // 尝试发送邮件
-                try {
-                    $this->logger->info('Preparing to send order confirmation email', [
-                        'order_id' => $order->getId(),
-                        'customer_email' => $order->getEmail(),
-                        'items_count' => $order->getOrderItems()->count(),
-                        'pickup_time' => $order->getPickupTime()?->format('Y-m-d H:i'),
-                        'pickup_location' => $order->getPickupLocation()?->getName(),
-                        'total_amount' => $order->getTotalAmount(),
-                        'mailer_dsn' => $_ENV['MAILER_DSN'] ?? 'not set',
-                        'system_email' => $_ENV['SYSTEM_EMAIL'] ?? 'not set'
-                    ]);
-
-                    $orderMailer->sendOrderConfirmation($order);
-                    $this->logger->info('Email sent successfully');
-                } catch (\Exception $e) {
-                    $this->logger->error('Failed to send order confirmation email', [
-                        'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
-                        'order_id' => $order->getId(),
-                        'error_class' => get_class($e),
-                        'mailer_dsn' => $_ENV['MAILER_DSN'] ?? 'not set',
-                        'file' => $e->getFile(),
-                        'line' => $e->getLine()
-                    ]);
-                    throw $e;
-                }
-
-                // 清空购物车
                 $session->remove('cart');
 
-                // 显示成功页面
-                return $this->render('shop/success.html.twig', [
-                    'order' => $order
+                $this->logger->info('Form submitted', [
+                    'form_data' => $request->request->all(),
+                    'is_valid' => $form->isValid(),
+                    'errors' => $form->getErrors(true)->__toString()
+                ]);
+
+                return $this->redirectToRoute('app_checkout_success', [
+                    'id' => $order->getId()
                 ]);
             } catch (\Exception $e) {
-                $this->logger->error('Order process failed', [
+                $this->logger->error('Order creation failed', [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
-
-                $this->addFlash('error', '订单处理失败：' . $e->getMessage());
-                return $this->redirectToRoute('app_checkout');
+                $this->addFlash('error', 'An error occurred while processing your order');
+                return $this->redirectToRoute('app_cart');
             }
-        } elseif ($form->isSubmitted()) {
-            // 如果表单提交但验证失败，获取具体的错误信息
-            $errors = [];
-
-            if ($form->get('customerName')->getErrors()->count() > 0) {
-                $errors[] = '姓名' . $form->get('customerName')->getErrors()->current()->getMessage();
-            }
-
-            if ($form->get('phone')->getErrors()->count() > 0) {
-                $errors[] = '电话' . $form->get('phone')->getErrors()->current()->getMessage();
-            }
-
-            if ($form->get('email')->getErrors()->count() > 0) {
-                $errors[] = '邮箱' . $form->get('email')->getErrors()->current()->getMessage();
-            }
-
-            if ($form->get('pickupLocation')->getErrors()->count() > 0) {
-                $errors[] = '取货地点' . $form->get('pickupLocation')->getErrors()->current()->getMessage();
-            }
-
-            if ($form->get('pickupTime')->getErrors()->count() > 0) {
-                $errors[] = '取货时间' . $form->get('pickupTime')->getErrors()->current()->getMessage();
-            }
-
-            if (empty($errors)) {
-                $this->addFlash('error', '请填写正确的上述信息');
-            } else {
-                foreach ($errors as $error) {
-                    $this->addFlash('error', $error);
-                }
-            }
+        } elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->logger->info('Form validation failed', [
+                'errors' => $form->getErrors(true, true)->__toString(),
+                'data' => $request->request->all()
+            ]);
+            $this->addFlash('error', $this->translator->trans('form.error.validation'));
+            return $this->render('shop/checkout.html.twig', [
+                'form' => $form->createView(),
+                'cart' => $cartItems,
+                'total' => $total
+            ]);
         }
 
-        // 4. 显示结算页面
         return $this->render('shop/checkout.html.twig', [
             'form' => $form->createView(),
             'cart' => $cartItems,
@@ -304,7 +271,6 @@ class ShopController extends AbstractController
         ]);
 
         try {
-            // 发送订单确认邮件给客户
             $orderMailer->sendOrderConfirmation($order);
 
             $this->addFlash('success', '订单确认邮件已发送到您的邮箱');

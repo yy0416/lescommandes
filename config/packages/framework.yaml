@@ -8,7 +8,8 @@ framework:
   #esi: true
   #fragments: true
 
-  csrf_protection: true
+  csrf_protection:
+    enabled: true
 
 when@test:
   framework:

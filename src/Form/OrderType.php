@@ -13,6 +13,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class OrderType extends AbstractType
 {
@@ -24,21 +27,43 @@ class OrderType extends AbstractType
 
         $builder
             ->add('customerName', TextType::class, [
-                'label' => 'WeChat Name',
+                'label' => 'order.form.customer_name',
                 'attr' => [
                     'placeholder' => '请输入您的微信名'
+                ],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'order.error.name_required'
+                    ])
                 ]
             ])
             ->add('phone', TelType::class, [
-                'label' => 'Phone',
+                'label' => 'order.form.phone',
                 'attr' => [
                     'placeholder' => '请输入您的手机号码 (例如: 0612345678)'
+                ],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'order.error.phone_required'
+                    ]),
+                    new Regex([
+                        'pattern' => '/^[0-9]{10}$/',
+                        'message' => 'order.error.phone_invalid'
+                    ])
                 ]
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Email',
+                'label' => 'order.form.email',
                 'attr' => [
                     'placeholder' => '请输入您的电子邮箱'
+                ],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'order.error.email_required'
+                    ]),
+                    new Email([
+                        'message' => 'order.error.email_invalid'
+                    ])
                 ]
             ])
             ->add('pickupLocation', EntityType::class, [
